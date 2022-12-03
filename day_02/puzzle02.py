@@ -12,7 +12,7 @@ def main(file_path):
     my_total_score = 0
     for turn in split_strategy:
         if turn != ['']:
-            my_total_score += correct_method(turn)
+            my_total_score += play_round(turn)
     print(my_total_score)
 
 
@@ -37,7 +37,7 @@ def map_to_RPS(character):
 def calc_score(p1, p2):
     if p1 == p2:
         return (3, 3)
-    if (p1 == "R" and p2 == "S") or (p1 == "S" and p2 == "P") or (p1 == "P" and p2 == "R"):
+    if KEY_BEATS_VAL[p1] == p2:
         return (6, 0)
     else:
         return (0, 6)
