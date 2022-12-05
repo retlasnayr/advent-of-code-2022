@@ -1,4 +1,4 @@
-from utils import read_in_file
+from utils import read_in_file, print_output
 
 
 def part_1(file_path):
@@ -75,9 +75,4 @@ def follow_instructions_2(stacks, instructions):
 
 
 if __name__ == "__main__":
-    print("Part 1")
-    print("Example:", part_1("example.txt"))
-    print("Real   :", part_1("input.txt"))
-    print("\nPart 2")
-    print("Example:", part_2("example.txt"))
-    print("Real   :", part_2("input.txt"))
+    print_output(part_1, part_2)
