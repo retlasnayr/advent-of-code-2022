@@ -77,7 +77,7 @@ def part_2(file_path):
     instructions = read_in_file(file_path)
     insts = [x.split(" ") for x in instructions]
     rope = {i: Pair(0, 0) for i in range(10)}
-    knot_positions = {i: set(Pair(0, 0)) for i in range(10)}
+    knot_positions = {i: {Pair(0, 0)} for i in range(10)}
 
     # Update head position:
     for inst in insts:
@@ -86,9 +86,44 @@ def part_2(file_path):
 
             for i in range(9):
                 rope[i], rope[i+1], knot_positions[i+1] = simulate_step(rope[i], rope[i+1], knot_positions[i+1])
-
+            # draw_grid(rope)
+    plot_path(knot_positions)
     return {k: len(v) for k, v in knot_positions.items()}
 
+
+def draw_grid(positions):
+    min_x = min(pos[0] for pos in positions.values())
+    max_x = max(pos[0] for pos in positions.values())
+    min_y = min(pos[1] for pos in positions.values())
+    max_y = max(pos[1] for pos in positions.values())
+
+    grid = [["-" for x in range(int(max_x - min_x + 1))] for y in range(int(max_y - min_y + 1))]
+
+    for name, pos in positions.items():
+        grid_item = grid[int(pos[1] - min_y)][int(pos[0] - min_x)]
+        if grid_item == "-":
+            grid[int(pos[1] - min_y)][int(pos[0] - min_x)] = name
+    print("\n".join([" ".join(str(x) for x in row) for row in grid]))
+    print("\n")
+
+
+def plot_path(positions):
+    positions = positions[max(positions.keys())]
+    min_x = int(min(pos[0] for pos in positions))
+    max_x = int(max(pos[0] for pos in positions))
+    min_y = int(min(pos[1] for pos in positions))
+    max_y = int(max(pos[1] for pos in positions))
+
+    grid = [["-" for x in range(int(max_x - min_x + 1))] for y in range(int(max_y - min_y + 1))]
+
+    for pos in positions:
+        grid[int(pos[1] - min_y)][int(pos[0] - min_x)] = "#"
+    grid[-min_y][-min_x] = "s"
+    print_grid = "\n".join([" ".join(str(x) for x in row) for row in grid][::-1])
+    print(print_grid)
+    with open("grid.txt", "w") as f:
+        f.write(print_grid)
+    print("\n")
 
 if __name__ == "__main__":
     print_output(part_1, part_2)
