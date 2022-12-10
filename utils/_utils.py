@@ -16,3 +16,7 @@ def print_output(part_1, part_2):
     print("\nPart 2")
     print("Example:", part_2("example.txt"))
     print("Real   :", part_2("input.txt"))
+
+
+def draw_grid(grid):
+    return "\n".join([" ".join(str(x) for x in row) for row in grid])

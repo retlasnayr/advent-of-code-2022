@@ -1,3 +1,5 @@
+import timeit
+
 from utils import read_in_file, print_output
 
 
@@ -87,7 +89,7 @@ def part_2(file_path):
             for i in range(9):
                 rope[i], rope[i+1], knot_positions[i+1] = simulate_step(rope[i], rope[i+1], knot_positions[i+1])
             # draw_grid(rope)
-    plot_path(knot_positions)
+    # plot_path(knot_positions)
     return {k: len(v) for k, v in knot_positions.items()}
 
 
@@ -126,5 +128,5 @@ def plot_path(positions):
     print("\n")
 
 if __name__ == "__main__":
-    print_output(part_1, part_2)
+    timeit.timeit(lambda: print_output(part_1, part_2))
 
