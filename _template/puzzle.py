@@ -1,4 +1,4 @@
-from utils import read_in_file, print_output
+from utils import read_in_file, print_output, draw_grid
 
 
 def part_1(file_path):
