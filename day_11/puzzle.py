@@ -2,7 +2,8 @@ from utils import read_in_file, print_output, draw_grid
 
 
 class Monkey:
-    def __init__(self, items: list = [], operation: str = "", test: int = 1):
+    def __init__(self, number, items: list = [], operation: str = "", test: int = 1):
+        self.monkey_number = number
         self.items = items
         self.operation = None
         self.test = test
@@ -52,6 +53,14 @@ class Monkey:
         target = self.do_test(new_level)
         return target, new_level
 
+    def inspect_item_list(self):
+        self.items_inspected += 1
+        old_item = self.items.pop(0)
+
+        new_level = Item(0, old_item.moduli, [self.do_operation(x) for x in old_item.values])
+        target = self.do_test(new_level.values[int(self.monkey_number)])
+        new_level.fix_moduli()
+        return target, new_level
 
 class Monkeys:
 
@@ -63,7 +72,7 @@ class Monkeys:
         for line in lines:
             if "Monkey" in line:
                 monkey_number = line.split(" ")[1][:-1]
-                monkeys[monkey_number] = Monkey()
+                monkeys[monkey_number] = Monkey(monkey_number)
             elif "Starting items: " in line:
                 items = line.split(": ")[1]
                 monkeys[monkey_number].items = [int(x) for x in items.split(", ")]
@@ -95,7 +104,6 @@ class Monkeys:
         return inspected[0] * inspected[1]
 
 
-
 def part_1(file_path):
     lines = read_in_file(file_path)
     monkeys = Monkeys(lines)
@@ -105,20 +113,40 @@ def part_1(file_path):
     return monkeys.create_output()
 
 
+class Item:
+
+    def __init__(self, initial_worry, moduli, values=None):
+        self.moduli = moduli
+        if values is None:
+            self.values = [initial_worry % mod for mod in moduli]
+        else:
+            self.values = values
+
+    def fix_moduli(self):
+        self.values = [self.values[i] % mod for i, mod in enumerate(self.moduli)]
+
+
+class SmartMonkeys(Monkeys):
+    def __init__(self, lines):
+        super().__init__(lines)
+        self.monkey_moduli = [monkey.test for monkey in self.monkeys.values()]
+        for monkey in self.monkeys.values():
+            monkey.items = [Item(value, self.monkey_moduli) for value in monkey.items]
+
+    def perform_round(self):
+        for monkey in self.monkeys.values():
+            while len(monkey.items) > 0:
+                target, item = monkey.inspect_item_list()
+                self.monkeys[target].items.append(item)
 
 
 def part_2(file_path):
-    return ""
-    # lines = read_in_file(file_path)
-    # lines = read_in_file(file_path)
-    # monkeys = setup_monkeys(lines)
-    # for i in range(20):
-    #     print(i)
-    #     for _ in range(20):
-    #         monkeys = perform_round(monkeys)
-    # inspected = [v.items_inspected for v in monkeys.values()]
-    # inspected = sorted(inspected, reverse=True)
-    # return inspected[0] * inspected[1]
+    lines = read_in_file(file_path)
+    monkeys = SmartMonkeys(lines)
+    dumb_monkeys = Monkeys(lines)
+    for _ in range(10000):
+        monkeys.perform_round()
+    return monkeys.create_output()
 
 
 if __name__ == "__main__":
