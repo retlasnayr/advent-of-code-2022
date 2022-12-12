@@ -150,5 +150,7 @@ def part_2(file_path):
 
 
 if __name__ == "__main__":
-    print_output(part_1, part_2)
-
+    # print_output(part_1, part_2)
+    import timeit
+    time = timeit.timeit(lambda: part_2("input.txt"),number=1)
+    print(time)

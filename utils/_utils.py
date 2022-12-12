@@ -1,3 +1,5 @@
+
+
 def read_in_file(file_path):
     """
     Read in text file at file path, then split to a list on the newline (\n) character
@@ -20,3 +22,33 @@ def print_output(part_1, part_2):
 
 def draw_grid(grid):
     return "\n".join([" ".join(str(x) for x in row) for row in grid])
+
+
+class Pair(list):
+
+    def __init__(self, x, y):
+        super().__init__((x, y))
+
+    def __add__(self, other):
+        return Pair(self[0] + other[0], self[1] + other[1])
+
+    def __sub__(self, other):
+        return Pair(self[0] - other[0], self[1] - other[1])
+
+    def __eq__(self, other):
+        return self[0] == other[0] and self[1] == other[1]
+
+    def __hash__(self):
+        return tuple(self).__hash__()
+
+    def is_adjacent_to(self, other):
+        diff = self - other
+        return diff[0] in (-1, 0, 1) and diff[1] in (-1, 0, 1)
+
+
+DIRECTION_VECTORS = {
+    "R": Pair(1, 0),
+    "L": Pair(-1, 0),
+    "U": Pair(0, 1),
+    "D": Pair(0, -1)
+}
