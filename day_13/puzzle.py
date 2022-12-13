@@ -13,16 +13,12 @@ def part_1(file_path):
         else:
             pair.append(line)
         if len(pair) == 2:
-            if compare_pair(pair[0], pair[1]):
+            left = Packet(pair[0])
+            right = Packet(pair[1])
+            if left < right:
                 total += index
     return total
 
-
-def compare_pair(left_in, right_in):
-    loc = {}
-    exec(f"left = {left_in}", globals(), loc)
-    exec(f"right = {right_in}", globals(), loc)
-    return compare(loc["left"], loc["right"])
 
 def compare(left, right):
     if isinstance(left, int) and isinstance(right, int):
@@ -46,9 +42,40 @@ def compare(left, right):
 
 class Packet:
     def __init__(self, packet_string):
+        self.string = packet_string
         loc = {}
         exec(f"packet = {packet_string}", globals(), loc)
-        self.value = loc["packet"]
+        self.auto_value = loc["packet"]
+        val = self.parse_list()[0]
+        self.value = val
+        if self.value != self.auto_value:
+            raise ValueError("HELP!!")
+
+    def parse_list(self, start=0, end=None):
+        just_appended = False
+        return_list = []
+        for index, character in enumerate(self.string):
+            if index < start:
+                just_appended = False
+                continue
+            if character == ",":
+                just_appended = False
+                continue
+            if character == "]":
+                just_appended = False
+                return return_list, index+1
+            if character == "[":
+                just_appended = False
+                temp, start = self.parse_list(index+1)
+                return_list.append(temp)
+                continue
+            if just_appended:
+                return_list[-1] = int(str(return_list[-1]) + character)  # This is hacky but otherwise [10,2] -> [1,0,2]
+            else:
+                return_list.append(int(character))
+                just_appended = True
+
+        return return_list
 
     def __lt__(self, other):
         if not isinstance(other, Packet):
@@ -87,10 +114,13 @@ def part_2(file_path):
             continue
         packets.append(Packet(line))
     sorted_packets = sorted(packets)
-    print([packet.value for packet in sorted_packets])
+    # print([packet.value for packet in sorted_packets])
     return (sorted_packets.index(div1) + 1) * (sorted_packets.index(div2) + 1)
 
 
 if __name__ == "__main__":
     print_output(part_1, part_2)
+    # import timeit
+    #
+    # print(timeit.timeit(lambda: part_2('input.txt'), number=1000))
 
