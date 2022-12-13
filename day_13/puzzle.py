@@ -43,13 +43,7 @@ def compare(left, right):
 class Packet:
     def __init__(self, packet_string):
         self.string = packet_string
-        loc = {}
-        exec(f"packet = {packet_string}", globals(), loc)
-        self.auto_value = loc["packet"]
-        val = self.parse_list()[0]
-        self.value = val
-        if self.value != self.auto_value:
-            raise ValueError("HELP!!")
+        self.value = self.parse_list()[0]
 
     def parse_list(self, start=0, end=None):
         just_appended = False
@@ -114,13 +108,8 @@ def part_2(file_path):
             continue
         packets.append(Packet(line))
     sorted_packets = sorted(packets)
-    # print([packet.value for packet in sorted_packets])
     return (sorted_packets.index(div1) + 1) * (sorted_packets.index(div2) + 1)
 
 
 if __name__ == "__main__":
     print_output(part_1, part_2)
-    # import timeit
-    #
-    # print(timeit.timeit(lambda: part_2('input.txt'), number=1000))
-
