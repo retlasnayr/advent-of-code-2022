@@ -6,7 +6,7 @@ class Grid:
         self.source = source
         self.moving_sand = None
         self.sand = []
-
+        self.steps = 0
         self.min_x = min(min(point.x for point in rocks), source.x)
         self.max_x = max(max(point.x for point in rocks), source.x)
         self.min_y = min(min(point.y for point in rocks), source.y)
@@ -28,7 +28,7 @@ class Grid:
         self.set_grid_val(self.source.x, self.source.y, "+")
 
         for rock in self.rocks:
-            self.set_grid_val(rock.x, rock.y, "#")
+            self.set_grid_val(rock.x, rock.y, u"\u2588")
         for sand in self.sand:
             self.set_grid_val(sand.x, sand.y, "o")
         # if self.moving_sand is not None:
@@ -42,9 +42,9 @@ class Grid:
             self.moving_sand = self.source
         if self.move_sand():
             return len(self.sand)
-        self.draw_cave()
 
     def move_sand(self):
+        self.steps += 1
         if self.moving_sand.y == self.max_y:
             return True
         if self.get_grid_val(new_pos := self.moving_sand + Pair(0, 1)) == ".":
@@ -56,6 +56,7 @@ class Grid:
         else:
 
             self.sand.append(self.moving_sand)
+            self.set_grid_val(self.moving_sand.x, self.moving_sand.y, 'o')
             if self.moving_sand == self.source:
                 return True
             self.moving_sand = None
@@ -95,13 +96,13 @@ def part_1(file_path):
         for index, _ in enumerate(line[:-1]):
             rocks.extend(interpolate_points(line[index], line[index+1]))
     grid = Grid(rocks, Pair(500, 0))
-    print(grid.output_cave())
+    # print(grid.output_cave())
     while True:
         sand = grid.timestep()
         if sand is not None:
             break
-    grid.draw_cave()
-    print(grid.output_cave())
+    # grid.draw_cave()
+    # print(grid.output_cave())
     return sand
 
 
@@ -119,7 +120,8 @@ def part_2(file_path):
         if sand is not None:
             break
     grid.draw_cave()
-    print(grid.output_cave())
+    # print(grid.output_cave())
+    print(grid.steps)
     return(sand)
 
 
