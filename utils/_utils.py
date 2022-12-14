@@ -29,6 +29,14 @@ class Pair(list):
     def __init__(self, x, y):
         super().__init__((x, y))
 
+    @property
+    def x(self):
+        return self[0]
+
+    @property
+    def y(self):
+        return self[1]
+
     def __add__(self, other):
         return Pair(self[0] + other[0], self[1] + other[1])
 
