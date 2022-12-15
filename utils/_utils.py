@@ -37,6 +37,10 @@ class Pair(list):
     def y(self):
         return self[1]
 
+    @property
+    def t(self):
+        return Pair(self.y, self.x)
+
     def __add__(self, other):
         return Pair(self[0] + other[0], self[1] + other[1])
 
