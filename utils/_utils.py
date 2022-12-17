@@ -58,6 +58,89 @@ class Pair(list):
         return diff[0] in (-1, 0, 1) and diff[1] in (-1, 0, 1)
 
 
+class Node:
+    def __init__(self, height, coords, out_links=None, in_links=None, distance=1e7, sp_tree=False):
+        self.height = height
+        self.coords = coords
+        self.out_links = [] if out_links is None else out_links
+        self.in_links = [] if in_links is None else in_links
+        self.distance = distance
+        self.visited = False
+        self.cheapest_path = []
+
+
+class Graph:
+    def __init__(self, nodes={}, edges=[]):
+        self.nodes = {n.coords: n for n in nodes.values()}
+        self.edges = edges
+        self.start = None
+        self.end = None
+
+    def add_node(self, height, coords, out_links=[]):
+        if height == "S":
+            self.start = coords
+            self.nodes[coords] = Node("a", coords, out_links, distance=0, sp_tree=True)
+            self.nodes[coords].cheapest_path = [coords]
+            return
+        if height == "E":
+            self.end = coords
+            height = "z"
+        self.nodes[coords] = Node(height, coords, out_links)
+
+    def populate_links(self):
+        for node in self.nodes.values():
+            adjacent_nodes = [node.coords + dir_vector for dir_vector in DIRECTION_VECTORS.values()]
+            for adj_node in adjacent_nodes:
+                if adj_node in self.nodes:
+                    if ord(self.nodes[adj_node].height) - 1 <= ord(node.height):
+                        node.out_links.append(adj_node)
+
+    def reverse_links(self):
+        for node in self.nodes.values():
+            adjacent_nodes = [node.coords + dir_vector for dir_vector in DIRECTION_VECTORS.values()]
+            for adj_node in adjacent_nodes:
+                if adj_node in self.nodes:
+                    if ord(self.nodes[adj_node].height) + 1 >= ord(node.height):
+                        node.in_links.append(adj_node)
+
+    def find_route(self, current_node=None):
+        while current_node != self.end:
+
+            if current_node is None:
+                current_node = self.nodes[self.start]
+            else:
+                current_node = self.nodes[current_node]
+            current_node.visited = True
+            for adj_node_coords in current_node.out_links:
+                adj_node = self.nodes[adj_node_coords]
+                if current_node.distance + 1 < adj_node.distance:
+                    adj_node.distance = current_node.distance + 1
+                    adj_node.cheapest_path = current_node.cheapest_path
+                    adj_node.cheapest_path.append(current_node.coords)
+            to_visit = {node.coords: node.distance for node in self.nodes.values() if not node.visited}
+            if not to_visit:
+                break
+            current_node = min(to_visit, key=to_visit.get)
+
+    def find_reverse(self, current_node=None):
+        to_visit = {node.coords: node.distance for node in self.nodes.values() if not node.visited}
+        while to_visit:
+            if current_node is None:
+                current_node = self.nodes[self.end]
+            else:
+                current_node = self.nodes[current_node]
+            current_node.visited = True
+            for adj_node_coords in current_node.in_links:
+                adj_node = self.nodes[adj_node_coords]
+                if current_node.distance + 1 < adj_node.distance:
+                    adj_node.distance = current_node.distance + 1
+                    adj_node.cheapest_path = current_node.cheapest_path
+                    adj_node.cheapest_path.append(current_node.coords)
+            to_visit = {node.coords: node.distance for node in self.nodes.values() if not node.visited}
+            if not to_visit:
+                break
+            current_node = min(to_visit, key=to_visit.get)
+
 DIRECTION_VECTORS = {
     "R": Pair(1, 0),
     "L": Pair(-1, 0),
