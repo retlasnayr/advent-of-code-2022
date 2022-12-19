@@ -24,6 +24,51 @@ def draw_grid(grid):
     return "\n".join([" ".join(str(x) for x in row) for row in grid])
 
 
+class NTuple(list):
+    def __init__(self, args, data_type=None):
+        if data_type is not None:
+            super().__init__(map(data_type, args))
+        else:
+            super().__init__(args)
+        self.length = len(args)
+
+    @property
+    def x(self):
+        if self.length > 0:
+            return self[0]
+        raise IndexError(f"NTuple of length {self.length} has no x component")
+
+    @property
+    def y(self):
+        if self.length > 1:
+            return self[1]
+        raise IndexError(f"NTuple of length {self.length} has no x component")
+
+    @property
+    def z(self):
+        if self.length > 2:
+            return self[2]
+        raise IndexError(f"NTuple of length {self.length} has no x component")
+
+    def __add__(self, other):
+        if self.length != other.length:
+            raise ValueError("Cannot add NTuples of different size")
+        return type(self)([self[i] + other[i] for i in range(self.length)])
+
+    def __sub__(self, other):
+        if self.length != other.length:
+            raise ValueError("Cannot add NTuples of different size")
+        return type(self)([self[i] - other[i] for i in range(self.length)])
+
+    def __eq__(self, other):
+        if self.length != other.length:
+            return False
+        return all((self[i] == other[i] for i in range(self.length)))
+
+    def __hash__(self):
+        return tuple(self).__hash__()
+
+
 class Pair(list):
 
     def __init__(self, x, y):
